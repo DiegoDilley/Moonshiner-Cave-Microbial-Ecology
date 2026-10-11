@@ -1,6 +1,7 @@
 
 
-###before you do this you have to convert fafsta to phylip ( i think? might be redundant to be honest)
+#before your un this file  have to convert fafsta to phylip (might be redundant not sure)
+
 pip install biopython
 
 python3 - << 'EOF'
