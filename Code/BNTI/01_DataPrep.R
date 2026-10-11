@@ -1,6 +1,6 @@
-##THis is the First R script you run to prep data for command line stuff
-##Inputs are pruned raw counts and sequence.fafsta,
-###output is asvs_for_tree.fasta
+#This is the first R script you run to prep data for command line stuff
+#Inputs are pruned raw counts and sequence
+#output is asvs_for_tree.fasta
 
 library(phyloseq)
 library(Biostrings)
