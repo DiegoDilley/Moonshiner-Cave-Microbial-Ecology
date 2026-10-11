@@ -37,7 +37,7 @@ library(dplyr)
 library(foreach)
 library(doParallel)
 
-setwd("/users/PAS2933/diegodilley/BNTI")
+setwd("/users/redacted/diegodilley/BNTI")
 if (!dir.exists("Outputs")) dir.create("Outputs", recursive = TRUE)
 
 # =============================================================================
