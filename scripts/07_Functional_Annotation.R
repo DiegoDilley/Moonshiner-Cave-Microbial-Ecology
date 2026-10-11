@@ -1,4 +1,3 @@
-# =============================================================================
 # 07_Functional_Annotation.R
 # Purpose: Predict metabolic functional groups for the full community and for
 #          cave-exclusive ASVs using FAPROTAX via the microeco package.
@@ -18,7 +17,6 @@
 #   FAPROTAX_CaveExclusive.xlsx
 #   Predatory_vs_FEAST_Unknown.xlsx
 #   Plots/Plot_DepthCorrelations.png
-# =============================================================================
 
 library(phyloseq)
 library(writexl)
@@ -49,10 +47,7 @@ clean_tax_df <- function(df) {
   df
 }
 
-# =============================================================================
 # SECTION 1 — FAPROTAX: FULL COMMUNITY (ALL SAMPLES)
-# =============================================================================
-
 cat("\n=== SECTION 1: Full Community FAPROTAX ===\n")
 
 # Export tables for microeco
@@ -103,9 +98,8 @@ write_xlsx(
   ),
   file.path(out_dir, "FAPROTAX_Results.xlsx")
 )
-cat("Saved: FAPROTAX_Results.xlsx\n")
 
-# --- Kruskal-Wallis by site type ---
+# Kruskal-Wallis by site type 
 df_kw <- results
 meta_cols <- c("SampleID","Site_Type","Site_Number","Distance_M","WaterPercent",
                "Water_Percantage","Distance_Datum_M","SiteReplicate")
@@ -161,9 +155,8 @@ write_xlsx(
   ),
   file.path(out_dir, "FAPROTAX_Statistical_Summary.xlsx")
 )
-cat("Saved: FAPROTAX_Statistical_Summary.xlsx\n")
 
-# --- Depth correlations (cave samples only) ---
+# Depth correlations (cave samples only) 
 cave_df <- df_kw %>%
   filter(Site_Type == "Cave") %>%
   mutate(Distance_M = as.numeric(Distance_M))
@@ -188,9 +181,8 @@ cat("\nFunctions correlated with cave depth (p < 0.05):\n")
 print(cor_results %>% filter(P_value < 0.05))
 
 write_xlsx(cor_results, file.path(out_dir, "FAPROTAX_DepthCorrelations.xlsx"))
-cat("Saved: FAPROTAX_DepthCorrelations.xlsx\n")
 
-# --- Depth correlation plot ---
+# Depth correlation plot
 plot_funcs <- cor_results %>% filter(P_value < 0.10) %>% pull(Function)
 
 if (length(plot_funcs) > 0) {
@@ -223,14 +215,9 @@ if (length(plot_funcs) > 0) {
 
   ggsave(file.path(out_dir, "Plots", "Plot_DepthCorrelations.png"),
          p_depth, width = 12, height = 8, dpi = 300, limitsize = FALSE)
-  cat("Saved: Plots/Plot_DepthCorrelations.png\n")
 }
 
-# =============================================================================
 # SECTION 2 — FAPROTAX: CAVE-EXCLUSIVE ASVs
-# =============================================================================
-
-cat("\n=== SECTION 2: Cave-Exclusive ASV FAPROTAX ===\n")
 
 otu_raw <- as.data.frame(otu_table(phy.filtered.DNA))
 if (!taxa_are_rows(phy.filtered.DNA)) otu_raw <- t(otu_raw)
@@ -345,12 +332,7 @@ write_xlsx(
 )
 cat("Saved: FAPROTAX_CaveExclusive.xlsx\n")
 
-# =============================================================================
 # SECTION 3 — PREDATORY ACTIVITY VS FEAST UNKNOWN (SUPPLEMENTARY TEST)
-# =============================================================================
-
-cat("\n=== SECTION 3: Predatory Activity vs FEAST Unknown ===\n")
-
 faprotax_stats <- read_excel(file.path(out_dir, "FAPROTAX_Statistical_Summary.xlsx"),
                              sheet = "Raw_Data")
 
@@ -400,7 +382,3 @@ if ("predatory_or_exoparasitic" %in% colnames(merged)) {
   cat("Column 'predatory_or_exoparasitic' not found in FAPROTAX results — skipping test.\n")
 }
 
-cat("\n============================\n")
-cat("ALL ANALYSES COMPLETE\n")
-cat("Output folder:", out_dir, "\n")
-cat("============================\n")
