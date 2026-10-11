@@ -27,4 +27,3 @@ cat("Phyloseq taxa:", ntaxa(phy_tree), "\n")
 
 # Save
 saveRDS(phy_tree, "phyloseq_filtered_counts_DNA_tree.rds")
-cat("Saved successfully!\n")
