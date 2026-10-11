@@ -1,0 +1,71 @@
+03_phylo_tree.txt
+
+nano phylo_tree.sh  #create job above code
+
+
+sbatch phylo_tree.sh  #sumbit job above code
+
+# Job Name = phylo_tree.sh
+
+#================================
+#Job is below 
+#===============================
+
+#!/bin/bash
+#SBATCH --job-name=phylo_tree
+#SBATCH --account=PAS3057
+#SBATCH --nodes=1
+#SBATCH --ntasks=16
+#SBATCH --mem=64GB
+#SBATCH --time=24:00:00
+#SBATCH --output=phylo_tree_%j.log
+#SBATCH --error=phylo_tree_%j.err
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=dilley.88@buckeyemail.osu.edu    # update if different
+
+# ── Environment ───────────────────────────────────────────────────
+module load miniconda3/24.1.2-py310
+source activate phylo_tree
+
+# ── Paths ─────────────────────────────────────────────────────────
+WORKDIR=/users/PAS2933/diegodilley/PhyloAnalysis
+INPUT=$WORKDIR/asvs_for_tree.fasta
+ALIGNED=$WORKDIR/asvs_aligned.fasta
+OUTDIR=$WORKDIR/Tree_Output
+mkdir -p $OUTDIR
+
+# ── Step 1: MUSCLE alignment ──────────────────────────────────────
+echo "$(date) — Starting MUSCLE alignment"
+muscle -super5 $INPUT -output $ALIGNED -threads 16
+echo "$(date) — MUSCLE alignment complete"
+
+# ── Step 2: ModelTest-NG ──────────────────────────────────────────
+echo "$(date) — Starting ModelTest-NG"
+modeltest-ng \
+  --input $ALIGNED \
+  --output $OUTDIR/modeltest_results \
+  --processes 16
+echo "$(date) — ModelTest-NG complete"
+
+# ── Step 3: PhyML ─────────────────────────────────────────────────
+echo "$(date) — Starting PhyML"
+phyml \
+  -i $ALIGNED \
+  -m 012345 \
+  -f m \
+  -v e \
+  -a e \
+  -c 4 \
+  -o tlr \
+  -b 100
+echo "$(date) — PhyML complete"
+
+echo "All steps finished!"
+
+#===================================================
+#Keep an eye on it while its running with code below
+#===================================================
+squeue -u $USER        # check job status
+tail -f phylo_tree_*.log   # watch the log in real time
+
+##########THIS ACTUALLY FAILS BUT ONLY ON A CERTAIN STEP SO MOVE TO SLURM V2 to pick up from the failure, because certain files were already made that work.

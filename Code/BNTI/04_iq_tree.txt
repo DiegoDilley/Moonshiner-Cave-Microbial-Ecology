@@ -1,0 +1,74 @@
+
+
+###before you do this you have to convert fafsta to phylip ( i think? might be redundant to be honest)
+pip install biopython
+
+python3 - << 'EOF'
+from Bio import AlignIO
+alignment = AlignIO.read("asvs_aligned.fasta", "fasta")
+AlignIO.write(alignment, "asvs_aligned.phy", "phylip-relaxed")
+print("Written to asvs_aligned.phy")
+EOF
+
+###IQTREE CODE BELOW###
+
+
+nano run_iqtree.sh
+##Start BELOW
+
+#!/bin/bash
+#SBATCH --job-name=phylo_tree
+#SBATCH --account=PAS3057
+#SBATCH --nodes=1
+#SBATCH --ntasks=16
+#SBATCH --mem=64GB
+#SBATCH --time=24:00:00
+#SBATCH --output=phylo_tree_%j.log
+#SBATCH --error=phylo_tree_%j.err
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=dilley.88@buckeyemail.osu.edu
+
+# ── Environment ───────────────────────────────────────────────────
+module load miniconda3/24.1.2-py310
+source activate phylo_tree
+
+# ── Paths ─────────────────────────────────────────────────────────
+WORKDIR=/users/PAS2933/diegodilley/PhyloAnalysis
+INPUT=$WORKDIR/asvs_aligned.fasta
+OUTDIR=$WORKDIR/Tree_Output
+mkdir -p $OUTDIR
+
+# ── IQ-TREE tree building ─────────────────────────────────────────
+echo "$(date) — Starting IQ-TREE"
+iqtree \
+  -s $INPUT \
+  -m GTR+I+G4 \
+  -B 1000 \
+  -T 16 \
+  --prefix $OUTDIR/final_tree
+echo "$(date) — IQ-TREE complete"
+
+# ── Save model summary ────────────────────────────────────────────
+cat > $OUTDIR/best_model_summary.txt << EOF
+================================================
+Model Summary
+================================================
+Date:              $(date)
+Input alignment:   $INPUT
+Tool:              IQ-TREE 3.1.1
+Model:             GTR+I+G4
+Bootstraps:        1000 (ultrafast)
+Selected by:       ModelTest-NG (BIC & AIC, weight=1.0)
+Tree file:         $OUTDIR/final_tree.treefile
+================================================
+EOF
+
+echo "================================================"
+echo "All steps finished!"
+echo "Tree file: $OUTDIR/final_tree.treefile"
+echo "Model summary: $OUTDIR/best_model_summary.txt"
+echo "================================================"
+
+##exit out of nano using keyoboard then
+
+sbatch run_iqtree.sh

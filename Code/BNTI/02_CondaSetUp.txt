@@ -1,0 +1,4 @@
+module load miniconda3/24.1.2-py310
+conda create -n phylo_tree -c bioconda muscle modeltest-ng phyml -y
+conda activate phylo_tree
+conda install -c bioconda iqtree -y
