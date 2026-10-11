@@ -1,9 +1,7 @@
-# =============================================================================
 # 03_Taxonomic_Composition.R
 # Purpose: Characterise and visualise the taxonomic composition of the full
 #          community (all site types) and identify ASVs exclusively detected
-#          in cave samples. Produces publication Figures 5, 6, and 13.
-#
+#          in cave samples. 
 # Requires: phyloseq_filtered_counts_DNA.rds (from 01_Phyloseq_Setup.R)
 #
 # Outputs (written to Outputs/Taxonomic_Composition/):
@@ -12,7 +10,6 @@
 #   Figure13_CaveExclusive_Waffle.png / .pdf
 #   Taxonomic_Abundance_Summary.xlsx
 #   CaveExclusive_Taxonomy.xlsx
-# =============================================================================
 
 library(phyloseq)
 library(ggplot2)
@@ -45,11 +42,10 @@ clean_tax <- function(df) {
   df
 }
 
-# =============================================================================
-# SECTION 1 — TAXONOMIC BARPLOTS (ALL SITE TYPES)
-# =============================================================================
 
-# ── Phylum ───────────────────────────────────────────────────────────────────
+# SECTION 1 — TAXONOMIC BARPLOTS (ALL SITE TYPES)
+
+#  Phylum only below
 
 ps_phylum <- tax_glom(phy.filtered.DNA, taxrank = "Phylum")
 ps_phylum <- transform_sample_counts(ps_phylum, function(x) x / sum(x))
@@ -125,7 +121,7 @@ ggsave(file.path(out_dir, "Figure5_Top15_Phyla_Barplot.png"), p5, width = 16, he
 ggsave(file.path(out_dir, "Figure5_Top15_Phyla_Barplot.pdf"), p5, width = 16, height = 6)
 cat("Saved: Figure 5 — Phylum\n")
 
-# ── Order ─────────────────────────────────────────────────────────────────────
+# Order only below 
 
 ps_order <- tax_glom(phy.filtered.DNA, taxrank = "Order")
 ps_order <- transform_sample_counts(ps_order, function(x) x / sum(x))
@@ -201,7 +197,7 @@ ggsave(file.path(out_dir, "Figure6_Top15_Orders_Barplot.png"), p6, width = 16, h
 ggsave(file.path(out_dir, "Figure6_Top15_Orders_Barplot.pdf"), p6, width = 16, height = 6)
 cat("Saved: Figure 6 — Order\n")
 
-# ── Summary tables ────────────────────────────────────────────────────────────
+# Summary tables below
 
 phylum_summary <- phylum_long %>%
   group_by(Site_Type, Phylum_plot) %>%
@@ -236,10 +232,7 @@ write_xlsx(
 )
 cat("Saved: Taxonomic_Abundance_Summary.xlsx\n")
 
-# =============================================================================
 # SECTION 2 — CAVE-EXCLUSIVE ASV TAXONOMY
-# =============================================================================
-
 otu_raw <- as.data.frame(otu_table(phy.filtered.DNA))
 if (!taxa_are_rows(phy.filtered.DNA)) otu_raw <- t(otu_raw)
 otu_raw <- as.data.frame(otu_raw)
@@ -298,9 +291,8 @@ write_xlsx(
 )
 cat("Saved: CaveExclusive_Taxonomy.xlsx\n")
 
-# =============================================================================
+
 # FIGURE 13 — WAFFLE CHART: CAVE ASV COMPOSITION
-# =============================================================================
 
 total_asvs     <- nrow(otu_raw)
 in_cave        <- sum(cave_present)
@@ -370,8 +362,3 @@ p13 <- ggplot(waffle_df, aes(x = col, y = -row, fill = Category)) +
 ggsave(file.path(out_dir, "Figure13_CaveExclusive_Waffle.png"), p13, width = 7, height = 6, dpi = 500, bg = "white")
 ggsave(file.path(out_dir, "Figure13_CaveExclusive_Waffle.pdf"), p13, width = 7, height = 6)
 cat("Saved: Figure 13 — Waffle Chart\n")
-
-cat("\n============================\n")
-cat("ALL ANALYSES COMPLETE\n")
-cat("Output folder:", out_dir, "\n")
-cat("============================\n")
