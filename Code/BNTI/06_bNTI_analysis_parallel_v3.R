@@ -4,14 +4,6 @@
 # Version 3 — Full corrected pipeline
 # CHANGE FROM v2:
 #   RCbray null model read distribution fixed to match Stegen 2013
-#   Supplementary Methods exactly. In v2, reads were distributed across
-#   chosen OTUs with equal probability (rep(1/obs_rich, obs_rich)).
-#   Stegen 2013 Supp. states: "the probability of drawing an individual
-#   into a given species is proportional to that species abundance in the
-#   meta-community." v3 corrects this by weighting the rmultinom draw
-#   by regional_weight (occ_freq x mean_relab), renormalized to the
-#   chosen OTUs only (Step B of RCbray null, see Step 5 below).
-#
 # FRAMEWORK OVERVIEW (Stegen et al. 2012, 2013):
 #   Step 1: Calculate observed bMNTD (abundance-weighted phylogenetic
 #           distance between closest relatives across community pairs).
