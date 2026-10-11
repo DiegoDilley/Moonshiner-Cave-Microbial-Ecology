@@ -63,4 +63,4 @@ echo "All steps finished!"
 squeue -u $USER        # check job status
 tail -f phylo_tree_*.log   # watch the log in real time
 
-##########THIS ACTUALLY FAILS BUT ONLY ON A CERTAIN STEP SO MOVE TO SLURM V2 to pick up from the failure, because certain files were already made that work.
+#check notes on my own files
