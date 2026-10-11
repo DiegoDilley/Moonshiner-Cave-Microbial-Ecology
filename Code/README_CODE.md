@@ -35,18 +35,6 @@ Correlates each cave ASV with the FEAST Unknown fraction to find ASVs associated
 **07_Functional_Annotation.R**
 FAPROTAX predictions through microeco for the full community and for cave-exclusive ASVs. Kruskal-Wallis by site type, Spearman correlations with distance, and a test of predatory function against the FEAST Unknown fraction.
 
-## Run order
-
-01, 02, 03, **05**, 04, 06, 07
-
-04 reads the FEAST results from 05, so 05 has to run before it even though it is numbered after.
-
-## Before running
-
-- Set the working directory to this folder. 05 has a hardcoded `setwd()` on line 1 that needs to be changed to your path.
-- Create `FEAST_output/` and `Outputs/FEAST/` by hand. 05 writes to both but does not create them. The other scripts make their own output folders.
-- The metadata column names `Sampel.ID` and `Water_Percantage` are misspelled in the metadata file and the scripts use those spellings. Don't fix one without fixing the other.
-- 05 reads the metadata as `Karst_Input_Metadata.TSV` and 01 reads it as `.tsv`. This works on Windows but will break on Mac or Linux.
 
 ## Outputs
 
@@ -54,7 +42,6 @@ FAPROTAX predictions through microeco for the full community and for cave-exclus
 - FEAST tables go to `FEAST_output/`
 - Everything else goes to `Outputs/<analysis name>/` as figures (PNG and PDF) and Excel tables
 
-In the figures, the FEAST "Unknown" fraction is labeled "Resident Cave".
 
 ## Packages
 
