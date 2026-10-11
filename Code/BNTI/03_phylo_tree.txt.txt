@@ -1,10 +1,6 @@
-03_phylo_tree.txt
 
 nano phylo_tree.sh  #create job above code
-
-
 sbatch phylo_tree.sh  #sumbit job above code
-
 # Job Name = phylo_tree.sh
 
 #================================
@@ -62,9 +58,8 @@ echo "$(date) — PhyML complete"
 
 echo "All steps finished!"
 
-#===================================================
-#Keep an eye on it while its running with code below
-#===================================================
+
+#Keep an eye on it while it is running with code below
 squeue -u $USER        # check job status
 tail -f phylo_tree_*.log   # watch the log in real time
 
