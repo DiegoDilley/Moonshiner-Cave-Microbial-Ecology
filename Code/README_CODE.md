@@ -4,6 +4,9 @@ R scripts for the 16S amplicon analysis of cave, surface, and water samples. The
 
 Sequence processing happens upstream of this folder (QIIME2 with Deblur, SILVA 138.1 taxonomy, following github.com/QLFaber/16Samplicons).
 
+## BNTI
+BNTI code is is seprate folder with own read me file
+
 ## Inputs
 
 Put these in `Inputs/`:
