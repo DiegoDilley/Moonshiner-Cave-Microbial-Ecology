@@ -19,7 +19,7 @@ nano run_iqtree.sh
 
 #!/bin/bash
 #SBATCH --job-name=phylo_tree
-#SBATCH --account=PAS3057
+#SBATCH --account=your own
 #SBATCH --nodes=1
 #SBATCH --ntasks=16
 #SBATCH --mem=64GB
@@ -27,14 +27,14 @@ nano run_iqtree.sh
 #SBATCH --output=phylo_tree_%j.log
 #SBATCH --error=phylo_tree_%j.err
 #SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=dilley.88@buckeyemail.osu.edu
+#SBATCH --mail-user=your own
 
 # ── Environment ───────────────────────────────────────────────────
 module load miniconda3/24.1.2-py310
 source activate phylo_tree
 
 # ── Paths ─────────────────────────────────────────────────────────
-WORKDIR=/users/PAS2933/diegodilley/PhyloAnalysis
+WORKDIR=your own
 INPUT=$WORKDIR/asvs_aligned.fasta
 OUTDIR=$WORKDIR/Tree_Output
 mkdir -p $OUTDIR
