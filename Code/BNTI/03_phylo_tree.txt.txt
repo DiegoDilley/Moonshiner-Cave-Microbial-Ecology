@@ -9,7 +9,7 @@ sbatch phylo_tree.sh  #sumbit job above code
 
 #!/bin/bash
 #SBATCH --job-name=phylo_tree
-#SBATCH --account=PAS3057
+#SBATCH --account=redacted
 #SBATCH --nodes=1
 #SBATCH --ntasks=16
 #SBATCH --mem=64GB
@@ -17,14 +17,14 @@ sbatch phylo_tree.sh  #sumbit job above code
 #SBATCH --output=phylo_tree_%j.log
 #SBATCH --error=phylo_tree_%j.err
 #SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=dilley.88@buckeyemail.osu.edu    # update if different
+#SBATCH --mail-user=redacted    # update if different
 
 # ── Environment ───────────────────────────────────────────────────
 module load miniconda3/24.1.2-py310
 source activate phylo_tree
 
 # ── Paths ─────────────────────────────────────────────────────────
-WORKDIR=/users/PAS2933/diegodilley/PhyloAnalysis
+WORKDIR= your own
 INPUT=$WORKDIR/asvs_for_tree.fasta
 ALIGNED=$WORKDIR/asvs_aligned.fasta
 OUTDIR=$WORKDIR/Tree_Output
