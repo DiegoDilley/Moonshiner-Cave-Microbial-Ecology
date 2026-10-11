@@ -1,21 +1,19 @@
-# =============================================================================
 # 04_Alpha_Diversity.R
 # Purpose: Calculate alpha diversity metrics (Shannon, Simpson, Richness) for
 #          all samples, run statistical comparisons across site types, test
 #          correlations with cave depth and FEAST Unknown fraction, and quantify
 #          diversity of cave-exclusive ASVs. Produces Figures 7 and 10.
-#
+
 # Requires:
 #   phyloseq_filtered_counts_DNA.rds        (from 01_Phyloseq_Setup.R)
 #   FEAST_output/Karst_FEAST_iteration1_collapsed.xlsx  (from 05_FEAST_Source_Tracking.R)
-#
+
 # Outputs (written to Outputs/Alpha_Diversity/):
 #   Figure7_AlphaDiversity_Boxplots.png / .pdf
 #   Figure10_AlphaVsFEAST_Unknown.png / .pdf
 #   Karst_AlphaDiversity.xlsx
 #   AlphaDiversity_Stats.xlsx
 #   CaveExclusive_Diversity.xlsx
-# =============================================================================
 
 library(phyloseq)
 library(vegan)
@@ -40,10 +38,8 @@ site_colors <- c(
   "Water"   = "#4A90C4"
 )
 
-# =============================================================================
-# STEP 1 — CALCULATE ALPHA DIVERSITY
-# =============================================================================
 
+# STEP 1 — CALCULATE ALPHA DIVERSITY
 otu <- as.data.frame(t(otu_table(phy.filtered.DNA)))
 
 alpha_df <- data.frame(
@@ -66,10 +62,7 @@ alpha_df <- alpha_df %>%
 cat("Site_Type check:\n")
 print(table(alpha_df$Site_Type, useNA = "always"))
 
-# =============================================================================
 # STEP 2 — APPEND FEAST UNKNOWN FRACTION
-# =============================================================================
-
 feast <- read_excel("FEAST_output/Karst_FEAST_iteration1_collapsed.xlsx")
 
 feast <- feast %>%
@@ -94,12 +87,8 @@ print(alpha_df %>% filter(!is.na(FEAST_Unknown)) %>%
         select(SampleID, Site_Type, FEAST_Unknown))
 
 write_xlsx(alpha_df, file.path(out_dir, "Karst_AlphaDiversity.xlsx"))
-cat("\nSaved: Karst_AlphaDiversity.xlsx\n")
 
-# =============================================================================
 # STEP 3 — STATISTICAL TESTS
-# =============================================================================
-
 df <- alpha_df
 df$Shannon          <- as.numeric(df$Shannon)
 df$Simpson          <- as.numeric(df$Simpson)
@@ -111,10 +100,6 @@ metrics <- c("Shannon", "Simpson", "Richness")
 sig     <- function(p) ifelse(p < 0.05, "YES ***", ifelse(p < 0.10, "TRENDING ~", "NO"))
 
 # Q1: Does site type influence alpha diversity?
-cat("=================================================================\n")
-cat("Q1: Alpha Diversity by Site Type (Kruskal-Wallis)\n")
-cat("=================================================================\n")
-
 kw_results <- lapply(metrics, function(m) {
   test <- kruskal.test(df[[m]] ~ df$Site_Type)
   data.frame(
@@ -161,10 +146,6 @@ means <- df %>%
 print(means)
 
 # Q2: Does distance influence cave alpha diversity?
-cat("\n=================================================================\n")
-cat("Q2: Alpha Diversity vs Distance from Entrance (Cave only)\n")
-cat("=================================================================\n")
-
 cave <- df %>% filter(Site_Type == "Cave")
 
 dist_results <- lapply(metrics, function(m) {
@@ -180,10 +161,6 @@ dist_results <- lapply(metrics, function(m) {
 print(dist_results)
 
 # Q3: Does FEAST Unknown correlate with alpha diversity?
-cat("\n=================================================================\n")
-cat("Q3: FEAST Unknown Fraction vs Alpha Diversity (Cave only)\n")
-cat("=================================================================\n")
-
 unknown_results <- lapply(metrics, function(m) {
   test <- cor.test(cave$FEAST_Unknown, cave[[m]], method = "spearman", exact = FALSE)
   data.frame(
@@ -209,10 +186,7 @@ write_xlsx(
 )
 cat("\nSaved: AlphaDiversity_Stats.xlsx\n")
 
-# =============================================================================
 # STEP 4 — CAVE-EXCLUSIVE ASV DIVERSITY
-# =============================================================================
-
 otu_raw <- as.data.frame(otu_table(phy.filtered.DNA))
 if (!taxa_are_rows(phy.filtered.DNA)) otu_raw <- t(otu_raw)
 otu_raw <- as.data.frame(otu_raw)
@@ -279,12 +253,8 @@ write_xlsx(
   ),
   file.path(out_dir, "CaveExclusive_Diversity.xlsx")
 )
-cat("\nSaved: CaveExclusive_Diversity.xlsx\n")
 
-# =============================================================================
 # FIGURE 7 — ALPHA DIVERSITY BOXPLOTS BY SITE TYPE
-# =============================================================================
-
 alpha_long <- df %>%
   select(SampleID, Site_Type, Shannon, Simpson, Richness) %>%
   pivot_longer(cols = c(Shannon, Simpson, Richness),
@@ -355,12 +325,8 @@ p7 <- ggplot(alpha_long, aes(x = Site_Type, y = Value, fill = Site_Type)) +
 
 ggsave(file.path(out_dir, "Figure7_AlphaDiversity_Boxplots.png"), p7, width = 10, height = 6, dpi = 500, bg = "white")
 ggsave(file.path(out_dir, "Figure7_AlphaDiversity_Boxplots.pdf"), p7, width = 10, height = 6)
-cat("Saved: Figure 7\n")
 
-# =============================================================================
 # FIGURE 10 — ALPHA DIVERSITY VS FEAST UNKNOWN FRACTION (CAVE ONLY)
-# =============================================================================
-
 cave_df <- df %>% filter(Site_Type == "Cave", !is.na(FEAST_Unknown))
 
 stat_shannon  <- cor.test(cave_df$Shannon,  cave_df$FEAST_Unknown, method = "spearman", exact = FALSE)
@@ -410,8 +376,3 @@ p10 <- ggplot(cave_long, aes(x = FEAST_Unknown, y = Value)) +
 ggsave(file.path(out_dir, "Figure10_AlphaVsFEAST_Unknown.png"), p10, width = 10, height = 5, dpi = 500, bg = "white")
 ggsave(file.path(out_dir, "Figure10_AlphaVsFEAST_Unknown.pdf"), p10, width = 10, height = 5)
 cat("Saved: Figure 10\n")
-
-cat("\n============================\n")
-cat("ALL ANALYSES COMPLETE\n")
-cat("Output folder:", out_dir, "\n")
-cat("============================\n")
