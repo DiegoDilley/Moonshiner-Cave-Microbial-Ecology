@@ -1,9 +1,6 @@
-# =============================================================================
 # 02_Beta_Diversity.R
-# Purpose: Beta-diversity ordination (NMDS) and associated statistical tests
+# Purpose: Beta-diversity ordination (NMDS) and statistical tests
 #          (PERMANOVA, PERMDISP, envfit) for all sites and cave-only samples.
-#          Also produces publication-ready Figures 3 and 4.
-#
 # Requires: phyloseq_filtered_RA_DNA.rds (from 01_Phyloseq_Setup.R)
 #
 # Outputs (written to Outputs/Beta_Diversity/):
@@ -11,7 +8,6 @@
 #   Figure4_NMDS_Cave_Envfit.png / .pdf
 #   Cave_Metadata_Corrplot.png
 #   NMDS_Statistical_Summary.xlsx
-# =============================================================================
 
 library(phyloseq)
 library(ggplot2)
@@ -35,16 +31,10 @@ site_colors <- c(
   "Water"   = "#4A90C4"
 )
 
-# =============================================================================
 # STEP 1 — ORDINATION (FULL DATASET)
-# =============================================================================
-
 phy.ord <- ordinate(phy.filtered.DNA.rel, method = "NMDS", distance = "bray")
 
-# =============================================================================
 # STEP 2 — PERMANOVA + BETADISPERSION (ALL SAMPLES)
-# =============================================================================
-
 otu_mat   <- as.data.frame(t(otu_table(phy.filtered.DNA.rel)))
 meta_df   <- data.frame(sample_data(phy.filtered.DNA.rel))
 meta_df   <- meta_df[rownames(otu_mat), ]
@@ -85,10 +75,7 @@ betadisp_overall <- data.frame(
                           "Groups do not differ in dispersion — PERMANOVA reflects centroid differences")
 )
 
-# =============================================================================
 # STEP 3 — BUILD ANNOTATION STRINGS
-# =============================================================================
-
 r2_overall      <- round(permanova_result$R2[1], 3)
 f_overall       <- round(permanova_result$F[1], 2)
 p_overall       <- permanova_result$`Pr(>F)`[1]
@@ -118,10 +105,7 @@ pairwise_label <- paste0(
   fmt_pw(pw_sw, "Surface vs Water")
 )
 
-# =============================================================================
 # STEP 4 — CAVE-ONLY NMDS + ENVFIT
-# =============================================================================
-
 phy.cave     <- subset_samples(phy.filtered.DNA.rel, Site_Type == "Cave")
 phy.cave.ord <- ordinate(phy.cave, method = "NMDS", distance = "bray")
 cave.meta    <- data.frame(sample_data(phy.cave))
@@ -137,10 +121,7 @@ env_fit <- envfit(
 cat("\n=== envfit — Distance from Entrance (Cave only) ===\n")
 print(env_fit)
 
-# =============================================================================
 # STEP 5 — CAVE-ONLY PERMANOVA (DISTANCE AS PREDICTOR)
-# =============================================================================
-
 otu_cave  <- as.data.frame(t(otu_table(phy.cave)))
 meta_cave <- data.frame(sample_data(phy.cave))
 meta_cave <- meta_cave[rownames(otu_cave), ]
@@ -164,10 +145,7 @@ cave_permanova_df <- data.frame(
                        ifelse(permanova_cave$`Pr(>F)`[1] < 0.10, "TRENDING ~", "NO"))
 )
 
-# =============================================================================
-# STEP 6 — METADATA CORRELATION (CAVE)
-# =============================================================================
-
+# STEP 6 — ADD METADATA (CAVE)
 cor_mat <- cor(cave.meta[, c("Distance_Datum_M", "Depth_Surface_M", "Water_Percantage")],
                method = "spearman")
 cat("\n=== Metadata correlations (Cave only) ===\n")
@@ -177,10 +155,7 @@ png(file.path(out_dir, "Cave_Metadata_Corrplot.png"), width = 600, height = 600)
 corrplot(cor_mat, method = "color", addCoef.col = "black", tl.col = "black")
 dev.off()
 
-# =============================================================================
-# FIGURE 3 — FULL NMDS (publication-ready)
-# =============================================================================
-
+# FIGURE 3 — FULL Sample NMDS 
 p3 <- plot_ordination(phy.filtered.DNA.rel, phy.ord, color = "Site_Type") +
   stat_ellipse(
     aes(fill = Site_Type),
@@ -230,10 +205,7 @@ ggsave(file.path(out_dir, "Figure3_NMDS_AllSites.png"), p3, width = 8, height = 
 ggsave(file.path(out_dir, "Figure3_NMDS_AllSites.pdf"), p3, width = 8, height = 6)
 cat("Saved: Figure 3\n")
 
-# =============================================================================
-# FIGURE 4 — CAVE NMDS + ENVFIT (publication-ready)
-# =============================================================================
-
+# FIGURE 4 — CAVE NMDS + ENVFIT 
 arrow_scale <- 0.38
 env_r2    <- round(env_fit$vectors$r[1], 3)
 env_p     <- env_fit$vectors$pvals[1]
@@ -297,10 +269,8 @@ ggsave(file.path(out_dir, "Figure4_NMDS_Cave_Envfit.png"), p4, width = 8, height
 ggsave(file.path(out_dir, "Figure4_NMDS_Cave_Envfit.pdf"), p4, width = 8, height = 6)
 cat("Saved: Figure 4\n")
 
-# =============================================================================
-# STEP 7 — EXPORT ALL STATISTICS
-# =============================================================================
 
+# STEP 7 — EXPORT ALL STATISTICS
 pw_df <- bind_rows(
   data.frame(Comparison = "Cave_vs_Surface",
              R2 = round(pw_cv$R2[1], 3), F = round(pw_cv$F[1], 3), P_value = pw_cv$`Pr(>F)`[1]),
