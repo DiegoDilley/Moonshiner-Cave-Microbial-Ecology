@@ -138,49 +138,7 @@ Before running:
 
 Then it calculates Bray-Curtis on the null communities and compares the observed Bray-Curtis for each pair to its 999 null values. RCbray is that comparison scaled from −1 to +1. Saved as `Outputs/null_BC_array.rds`.
 
-**Step 6. Classify each pair.**
 
-| Condition | Process |
-|---|---|
-| βNTI > +2 | Variable selection |
-| βNTI < −2 | Homogeneous selection |
-| \|βNTI\| ≤ 2 and RCbray > +0.95 | Dispersal limitation + drift |
-| \|βNTI\| ≤ 2 and RCbray < −0.95 | Homogenizing dispersal |
-| \|βNTI\| ≤ 2 and \|RCbray\| ≤ 0.95 | Drift (undominated) |
-
-βNTI is checked first. RCbray only matters for pairs where selection isn't significant.
-
-**Step 7. Save outputs** (in `Outputs/`):
-
-- `bMTI_RCbray_results.csv`: one row per sample pair with `Sample1`, `Sample2`, `SiteType1`, `SiteType2`, `Comparison`, `bMNTD_obs`, `bMTI`, `RCbray`, `Process`
-- `bMNTD_observed_matrix.csv`, `bMTI_matrix.csv`, `RCbray_matrix.csv`: full sample × sample matrices
-- `Process_Summary.csv`: count and percent of each process for each comparison type
-- `null_bMNTD_array.rds`, `null_BC_array.rds`: the raw null distributions. These files are big, but keep them. They let you recalculate βNTI or RCbray without rerunning the randomizations.
-
-**Site type note:** the `Comparison` column is built from `Site_Type` in the phyloseq sample data, and that column labels C001, C002, and C003 wrong (they're surface soils). The figure scripts that come after step 06 rebuild the comparison groups from `metadata.xlsx`, so use those groups, not the `Comparison` column in this file. The bMTI, RCbray, and Process values aren't affected.
-
----
-
-## Software
-
-| Tool | Version |
-|---|---|
-| R (local) | 4.5.1 |
-| phyloseq | 1.52.0 |
-| Biostrings | 2.76.0 |
-| ape | 5.8-1 |
-| phangorn | 2.12.1 |
-| picante | 1.8.2 |
-| vegan | 2.7-3 |
-| dplyr | 1.2.0 |
-| foreach | 1.5.2 |
-| doParallel | 1.0.17 |
-| miniconda (OSC module) | miniconda3/24.1.2-py310 |
-| MUSCLE | v5 |
-| ModelTest-NG | from bioconda |
-| IQ-TREE | 3.1.1 |
-
-R package versions come from my local library. The versions in the OSC library may be different.
 
 ## References
 
